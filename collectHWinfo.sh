@@ -123,35 +123,5 @@ echo "************************************************************************"
 echo "$(cat /tmp/hwcheck_$(hostname)$(date +"%Y%m%d").log)"
 echo "************************************************************************"
 echo ""
-read -p "would you like to update the EW ticket with the info displayed above? (Y/N) " a
-if [ "$a" != "y" ] && [ "$a" != "Y" ]
-then
-        exit
-fi
 
-echo "Type the ticket number assosiated to this HW check (6 digits), followed by [ENTER]:"
-read UITNO
-while [[ ! $UITNO =~ ^[0-9][0-9][0-9][0-9][0-9][0-9]$ ]]; do
-    echo "Please enter the ticket number assosiated to this HW check (6 digits)"
-    read UITNO
-done
-echo "the ticket number assosiated to this HW check is $UITNO"
-TNO=$UITNO
-
-#check if getControlValue  is already installed
-if [ ! -x /usr/local/tools/getControlValue ];
-then
-        # ask for cliet code
-        echo "Could not determine the client code automatically, Please enter the client code, followed by [ENTER]:"
-        read CLIENTCODE
-else
-        CLIENTCODE=$(getControlValue --file /usr/local/tools/control_files/distribute.cfg --section ClientInfo --key clientCode)
-fi
-# mail the report to support@intelerad.com
-# check if mail is installed
-if ! rpm -qa | grep -qw mailx;
-	then # Install mailx
-	sudo yum install -y mailx
-fi
-mail -s "${CLIENTCODE^^} EW$TNO" support@intelerad.com < /tmp/hwcheck_$(hostname)$(date +"%Y%m%d").log
 
